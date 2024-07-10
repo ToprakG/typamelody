@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typing Game</title>
+    <style>
+        body {
+            font-family: 'Arial Rounded MT Bold', sans-serif;
+            background-color: #333;
+            color: #fff;
+            margin: 0;
+        }
+        #main-page {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        .book-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 50px;
+            max-width: 500px;
+            margin: 20px auto;
+            justify-content: space-around; /* Centers items horizontally */
+        }
+        .book-item {
+            background: rgb(65, 64, 64);
+            padding: 20px;
+            border: 1px solid rgb(62, 62, 62);
+            width: 30%;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            cursor: pointer;
+            text-align: center;
+            color: rgb(222, 222, 222);
+        }
+        #typing-container {
+            background: rgb(75, 75, 75);
+            padding: 20px;
+            border: 1px solid #ddd;
+            width: 60%;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin: 20px auto;
+            font-size: 18px;
+            white-space: pre-wrap; /* Preserve whitespace formatting */
+            position: relative;
+        }
+        .correct {
+            color: rgb(210, 209, 209);
+        }
+        .incorrect {
+            color: red;
+        }
+        #wpm {
+            font-size: 18px;
+            margin-top: 10px;
+            text-align: center;
+        }
+        textarea {
+            display: none;
+        }
+        #cursor {
+            position: absolute;
+            width: 10px;
+            height: 20px; /* Adjust cursor height */
+            background-color: rgba(0, 255, 0, 0.7); /* Green color with 70% opacity */
+            animation: blink 1s step-end infinite; /* Blink animation */
+            pointer-events: none; /* Cursor should not interfere with typing */
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0; /* Blink animation, adjust timing as needed */
+            }
+        }
+        #typing-game {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+        }
+        #back-button {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: #333; /* Same as body background color */
+            color: #fff; /* White text color */
+            font-family: 'Arial Rounded MT Bold', sans-serif; /* Font family */
+            font-size: 30px; /* Font size */
+            padding: 10px 20px; /* Padding for button */
+            border: none; /* Remove border */
+            cursor: pointer; /* Pointer cursor on hover */
+            z-index: 10; /* Ensure it's above other elements */
+        }
+        #accuracy {
+            margin-top: 10px; /* Spacing below the text */
+            font-size: 18px; /* Font size of the accuracy text */
+            color: #fff; /* Text color */
+            text-align: center;
+            font-family: 'Arial Rounded MT Bold', sans-serif;
+        }
+        #metrics {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            gap: 50px;
+        }
+    </style>
+</head>
+<body>
+    <div id="main-page">       
+        <h1>Choose a Book/Paragraph</h1>
+        <h3>Note: Typing in different languages help your typing speed a lot!</h3>
+        <div class="book-grid">
+            <div class="book-item" data-text="Ainsi, couramment, la soupe est un aliment liquide ou onctueux (exceptionnellement sans part liquide), froid ou chaud, qui est generalement servi au debut du repas ou en plat unique.">Soup Article in French</div>
+            <div class="book-item" data-text="Call me Ishmael. Some years ago—never mind how long precisely—having little or no money in my purse, and nothing particular to interest me on shore, I thought I would sail about a little and see the watery part of the world.">Excerpt from Moby Dick</div>
+            <div class="book-item" data-text="Wir sind eine ganz normale Familie. Ich wohne zusammen mit meinen Eltern, meiner kleinen Schwester Lisa und unserer Katze Mick. Meine Großeltern wohnen im gleichen Dorf wie wir. Oma Francis arbeitet noch. Sie ist Krankenschwester. Die Anderen sind schon in Rente. Oma Lydia nimmt sich viel Zeit für mich und geht häufig mit mir Kleider oder Schuhe kaufen. Leider will meine kleine Schwester dann auch immer mit. Mein Vater arbeitet bei einer Bank und fährt am Wochenende gern mit seinem Motorrad. Das findet meine Mutter nicht so gut, da sie meint, dass Motorradfahren so gefährlich ist. Sie sagt, dass ich und meine Schwester auf keinen Fall mitfahren dürfen. Mein Vater versteht das nicht, aber er will sich auch nicht streiten. Nächstes Jahr wollen wir in ein größeres Haus ziehen, weil meine Eltern noch ein Baby bekommen. Ich hoffe, dass wir nicht zu weit weg ziehen, da alle meine Freunde hier in der Nähe wohnen. Meine Tante Clara, die Schwester meiner Mutter, wohnt sogar genau gegenüber. Meine Cousine Barbara kommt deshalb häufig zu Besuch.">German Familie Article</div>
+            <div class="book-item" data-text="El verano pasado estuve cuatro semanas en Japon. Yo viajaba con dos amigos. Volamos en avion e hizo una escala en Dubai. Las vacaciones en Japon eran muy grandes. Pero ahi estaba increiblemente caliente. Por la manana era muy cargada. Hace tres semanas estabamos en Tokio. Alli, visitamos varias partes de la ciudad. Entre otras cosas, estabamos en Akihabara, el barrio de la electrónica famosa de Tokio. Había mucha gente en movimiento. Tambien hemos hecho un viaje en el río y tiene santuarios, visitaron templos y parques. Hemos tomado muchas fotografías.
+            Si estas en Japon, no debe dejar de visitar los balnearios con aguas termales.
+            La comida en Japon era muy sabrosa, pero tambien es muy diferente a la nuestra.
+            Tambien fueron una semana en Osaka, y visitó el famoso castillo alli. Tambien había muchos templos y santuarios para ser visto. Ademas, hicimos un viaje a Kioto y han visitado el Templo Dorado.
+            Japón es realmente un país hermoso y la gente son muy hospitalaria. Me gustaría ir de vacaciones allí de nuevo.">Spanish Summer Essay</div>
+            <div class="book-item" data-text="Ma famille est mon monde. J'aime tellement ma famille que je vis dans une grande maison avec ma famille. J'ai toujours grandi et grandi dans une grande famille commune. nous celebrons toujours chaque fonction ensemble et apprecions ev chaque personne de ma famille. nous mangeons toujours de la nourriture ensemble sur ma table à manger. je ne peux pas vivre sans eux. nous, frere et sœur, apprecions ensemble chaque festival et jouons ensemble.">Famille</div>
+            <div class="book-item" data-text="Bonjour, je m'appelle Tayfur. Voici ma famille. Mon pere s'appelle Diego. Il est footballeur et il aime lait. Ma mere s'appelle Wanda. Elle est modele et elle adore music de rap. J'ai un frere Il s'appelle Kenan Karaman. Il est etudiant et aime Selinay Karaman. Nous aimons passer du temps ensemble, surtout regardes filme de comedie. Nous sommes une famille heureuse. ">Famille de Tayfur</div>
+            <div class="book-item" data-text="The goalkeeper -sometimes written as goal-keeper, abbreviated as GK, keeper, keeps, or goalie- is a position in association football. It is the most specialised position in the sport. The goalkeeper's main role is to stop the opposing team from scoring -putting the ball over the goal-line of the goal-This is accomplished by having the goalkeeper move into the trajectory of the ball to either catch it or direct it further from the vicinity of the goal line. Within the penalty area goalkeepers are allowed to use their hands, giving them -outside throw ins-the sole rights on the field to handle the ball. The goalkeeper is indicated by wearing a different coloured kit from their teammates and opposition.">Goalkeeper Article</div>
+            <div class="book-item" data-text="The word technology comes from the two Greek words, ‘techne’ and ‘logos’. Techne means art, skills, or craft, and Logos means a word, saying, or expression that expresses inward thought. Thus, technology means the skill to convey an idea to reach a goal. But nowadays, the term technology mainly signifies the knowledge of tools, machines, techniques, crafts, systems, and organisation methods to solve a problem. Today, technological advancement has provided the human race with the ability to control and adapt to their natural environment. In this Essay on Technology, students will know the importance of technology, its advantages and disadvantages and the future of technology.">Technology Essay</div>
+
+            <!-- Add more book items here -->
+        </div>
+    </div>
+    
+    <div id="typing-game">
+        <button id="back-button">Back</button>
+        <div id="typing-container" tabindex="0">
+            <p id="display-text"></p>
+            <div id="cursor"></div>
+        </div>
+        <div id="metrics">
+            <div id="wpm">WPM: 0</div>
+            <div id="accuracy">Accuracy: <span id="accuracy-value">0%</span></div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.26/Tone.js"></script>
+    <script>
+        var audio = new Audio('buzzer.mp3');
+        audio.playbackRate = 2;
+        const bookItems = document.querySelectorAll('.book-item');
+        const mainPage = document.getElementById('main-page');
+        const typingGame = document.getElementById('typing-game');
+        const displayText = document.getElementById('display-text');
+        const typingContainer = document.getElementById('typing-container');
+        const wpmDisplay = document.getElementById('wpm');
+        const cursor = document.getElementById('cursor');
+        const backButton = document.getElementById('back-button');
+
+        let startTime, correctLetters;
+        let textToType = '';
+        let currentIndex = 0;
+        let notesSequence = [];
+
+
+        // Mapping letters to musical notes
+        const noteMapping = {
+            'a': 'C3', 'b': 'D3', 'c': 'E3', 'd': 'F3', 'e': 'G3',
+            'f': 'A3', 'g': 'B3', 'h': 'C4', 'i': 'D4', 'j': 'E4',
+            'k': 'F4', 'l': 'G4', 'm': 'A4', 'n': 'B4', 'o': 'C5',
+            'p': 'D5', 'q': 'E5', 'r': 'F5', 's': 'G5', 't': 'A5',
+            'u': 'B5', 'v': 'C3', 'w': 'D3', 'x': 'E3', 'y': 'F3', 'z': 'G3',
+            ' ': 'A2', ',': 'B2', '.': 'C2', '!': 'D2', '?': 'E2', '\'': 'F2', '-': 'G2'
+        };
+
+
+        // Initialize Tone.js synth
+        const synth = new Tone.Synth().toDestination();
+
+        bookItems.forEach(item => {
+            item.addEventListener('click', () => {
+                textToType = item.getAttribute('data-text');
+                displayText.innerHTML = textToType.split('').map(char => `<span>${char}</span>`).join('');
+                startTime = null;
+                correctLetters = 0;
+                wpmDisplay.textContent = 'WPM: 0';
+                currentIndex = 0;
+                notesSequence = [];
+                document.addEventListener('keydown', handleTyping);
+                mainPage.style.display = 'none';
+                typingGame.style.display = 'flex';
+                typingContainer.focus();
+                updateCursor();
+            });
+        });
+
+        backButton.addEventListener('click', () => {
+            mainPage.style.display = 'flex';
+            typingGame.style.display = 'none';
+            document.removeEventListener('keydown', handleTyping);
+        });
+
+        function handleTyping(e) {
+            // Only consider character keys and the space bar
+            if (e.key === "Enter") {
+                const currentLetter = typedText[currentIndex];
+                if (currentLetter) {
+                    const br = document.createElement('br');
+                    currentLetter.insertAdjacentElement('afterend', br);
+                }
+                currentIndex++;
+                console.log(currentIndex);
+                updateCursor();
+                return;
+            }
+            
+            if (!e.key.match(/^[a-zA-Z ,.:!?'"-]$/)) return;
+
+            if (!textToType) return;
+
+            if (!startTime) {
+                startTime = new Date();
+            }
+
+            const typedText = displayText.querySelectorAll('span');
+
+            if (e.key === textToType[currentIndex]) {
+                typedText[currentIndex].classList.add('correct');
+
+                if (noteMapping[e.key]) {
+                    synth.triggerAttackRelease(noteMapping[e.key], "8n");
+                    notesSequence.push(noteMapping[e.key]);
+                }
+
+                currentIndex++;
+                correctLetters++;
+
+                // Update WPM
+                updateWPM();
+
+                if (currentIndex === textToType.length) {
+                    document.removeEventListener('keydown', handleTyping);
+                    setTimeout(playNotesSequence, 500);  // Play the notes sequence after a slight delay
+                }
+            } else {
+                typedText[currentIndex].classList.add('incorrect');
+                audio.play();
+                currentIndex++;
+            }
+            updateCursor();
+        }
+
+        function updateWPM() {
+            const currentTime = new Date();
+            const timeDiff = (currentTime - startTime) / 1000 / 60; // in minutes
+            const wpm = Math.round(correctLetters / 5 / timeDiff);
+            wpmDisplay.textContent = `WPM: ${wpm}`;
+
+            // Calculate accuracy
+            const totalCharacters = textToType.length;
+            const accuracyPercentage = ((correctLetters / totalCharacters) * 100).toFixed(2);
+            document.getElementById('accuracy-value').textContent = `${accuracyPercentage}%`;
+        }
+
+        function updateCursor() {
+            const typedText = displayText.querySelectorAll('span');
+            if (currentIndex < typedText.length) {
+                const currentLetter = typedText[currentIndex];
+                const rect = currentLetter.getBoundingClientRect();
+                cursor.style.top = `${currentLetter.offsetTop}px`;
+                cursor.style.left = `${currentLetter.offsetLeft}px`;
+            }
+        }
+
+        function playNotesSequence() {
+            let time = 0;
+            const typedText = displayText.querySelectorAll('span');
+
+            console.log(typedText);
+
+            notesSequence.forEach((note, index) => {
+                setTimeout(() => {
+                    setTimeout(() => {
+                        synth.triggerAttackRelease(note, "8n");
+                    }, 250); // Mid-point of the jump
+                }, time);
+                time += Tone.Time("8n").toSeconds() * 1000; // Convert to milliseconds
+            });
+        }
+    </script>
+</body>
+</html>
